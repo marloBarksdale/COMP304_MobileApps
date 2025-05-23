@@ -20,7 +20,7 @@ class ViewEditTaskActivity : ComponentActivity() {
         val task = intent.getSerializableExtra("task", Task::class.java)
         setContent {
             task?.let {
-                EditTaskScreen(task = it, onSave = { finish() }, onDelete = { finish() })
+                EditTaskScreen(it, onSave = { finish() }, onDelete = { finish() })
             }
         }
     }
@@ -31,23 +31,23 @@ fun EditTaskScreen(task: Task, onSave: (Task) -> Unit, onDelete: (Task) -> Unit)
     var title by remember { mutableStateOf(task.title) }
     var desc by remember { mutableStateOf(task.description) }
     var date by remember { mutableStateOf(task.dueDate) }
-    var complete by remember { mutableStateOf(task.isComplete) }
-    var priority by remember { mutableStateOf(task.isHighPriority) }
+    var isComplete by remember { mutableStateOf(task.isComplete) }
+    var isHighPriority by remember { mutableStateOf(task.isHighPriority) }
 
     Column(modifier = Modifier.padding(16.dp)) {
         TextField(value = title, onValueChange = { title = it }, label = { Text("Title") })
         TextField(value = desc, onValueChange = { desc = it }, label = { Text("Description") })
         TextField(value = date, onValueChange = { date = it }, label = { Text("Due Date") })
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(checked = complete, onCheckedChange = { complete = it })
+            Checkbox(checked = isComplete, onCheckedChange = { isComplete = it })
             Text("Completed")
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(checked = priority, onCheckedChange = { priority = it })
+            Checkbox(checked = isHighPriority, onCheckedChange = { isHighPriority = it })
             Text("High Priority")
         }
         Button(onClick = {
-            onSave(task.copy(title = title, description = desc, dueDate = date, isComplete = complete, isHighPriority = priority))
+            onSave(task.copy(title = title, description = desc, dueDate = date, isComplete = isComplete, isHighPriority = isHighPriority))
         }) {
             Text("Save")
         }

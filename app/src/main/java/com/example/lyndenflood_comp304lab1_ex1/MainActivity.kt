@@ -1,13 +1,10 @@
 package com.example.lyndenflood_comp304lab1_ex1
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -29,15 +26,13 @@ import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     private val taskList = mutableStateListOf<Task>()
-
-    private lateinit var addTaskLauncher: ActivityResultLauncher<Intent>
+    private lateinit var addTaskLauncher: androidx.activity.result.ActivityResultLauncher<Intent>
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        addTaskLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
+        addTaskLauncher = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
                 val task = result.data?.getSerializableExtra("newTask", Task::class.java)
                 task?.let { taskList.add(it) }
             }
@@ -55,9 +50,7 @@ class MainActivity : ComponentActivity() {
                     val intent = Intent(this, AddTaskActivity::class.java)
                     addTaskLauncher.launch(intent)
                 },
-                onDeleteTask = { task ->
-                    taskList.remove(task)
-                }
+                onDeleteTask = { taskList.remove(it) }
             )
         }
     }
@@ -76,13 +69,13 @@ fun TaskListScreen(
                 Icon(Icons.Default.Add, contentDescription = "Add Task")
             }
         }
-    ) {
+    ) { padding ->
         if (taskList.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("You have no tasks. Add one!", fontSize = 18.sp, color = Color.Gray)
+                Text("You have no tasks. Add one!", fontSize = 18.sp)
             }
         } else {
-            LazyColumn(modifier = Modifier.padding(it)) {
+            LazyColumn(contentPadding = padding) {
                 items(taskList) { task ->
                     TaskCard(task = task, onClick = { onTaskClick(task) }, onDelete = { onDeleteTask(task) })
                 }
@@ -103,11 +96,13 @@ fun TaskCard(task: Task, onClick: () -> Unit, onDelete: () -> Unit) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column {
                 Text(
                     text = task.title,
                     style = TextStyle(
@@ -115,8 +110,11 @@ fun TaskCard(task: Task, onClick: () -> Unit, onDelete: () -> Unit) {
                         textDecoration = if (task.isComplete) TextDecoration.LineThrough else null
                     )
                 )
-                Text(text = "Due: ${task.dueDate}", fontSize = 14.sp, color = Color.Gray)
-                if (task.isHighPriority) Text("High Priority", color = Color.Red, fontSize = 12.sp)
+                Text(
+                    text = "Due: ${task.dueDate}",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             IconButton(onClick = onDelete) {
                 Icon(Icons.Default.Delete, contentDescription = "Delete Task")

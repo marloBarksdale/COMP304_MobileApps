@@ -34,14 +34,20 @@ fun AddTaskScreen(onSave: (Task) -> Unit) {
     var date by remember { mutableStateOf("") }
     var isHighPriority by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier
+        .padding(24.dp)
+        .fillMaxSize()) {
         TextField(value = title, onValueChange = { title = it }, label = { Text("Title") })
+        Spacer(modifier = Modifier.height(12.dp))
         TextField(value = desc, onValueChange = { desc = it }, label = { Text("Description") })
+        Spacer(modifier = Modifier.height(12.dp))
         TextField(value = date, onValueChange = { date = it }, label = { Text("Due Date") })
+        Spacer(modifier = Modifier.height(12.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = isHighPriority, onCheckedChange = { isHighPriority = it })
             Text("High Priority")
         }
+        Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
             val newTask = Task(
                 id = Random.nextInt(),

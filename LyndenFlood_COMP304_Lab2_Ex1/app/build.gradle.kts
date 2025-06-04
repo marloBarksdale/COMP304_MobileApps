@@ -49,13 +49,14 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.navigation.compose)
-
+    implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.material3.window.size.class1.v120)
+    implementation(libs.androidx.runtime.livedata)
 
 
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
-    implementation(libs.androidx.material3.window.size.class1)
+
 
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

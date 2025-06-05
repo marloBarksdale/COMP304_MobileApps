@@ -10,16 +10,16 @@ import java.time.LocalDate
 class HabitViewModel : ViewModel() {
 
     //An internal mutable List that the only this ViewModel can modify
-//    private val _habits = MutableLiveData<List<Habit>>(emptyList());
+   private val _habits = MutableLiveData<List<Habit>>(emptyList());
 
 
-    private val _habits = MutableLiveData<List<Habit>>(
-        listOf(
-            Habit(1, "Walk 10 mins", "Daily morning walk", LocalDate.now(), null, 7, listOf(
-                LocalDate.now(), LocalDate.now())),
-            Habit(2, "Meditate", "Evening routine", LocalDate.now(), null, 5, listOf(LocalDate.now()))
-        )
-    )
+//    private val _habits = MutableLiveData<List<Habit>>(
+//        listOf(
+//            Habit(1, "Walk 10 mins", "Daily morning walk", LocalDate.now(), null, 7, listOf(
+//                LocalDate.now(), LocalDate.now())),
+//            Habit(2, "Meditate", "Evening routine", LocalDate.now(), null, 5, listOf(LocalDate.now()))
+//        )
+//    )
 
     
 

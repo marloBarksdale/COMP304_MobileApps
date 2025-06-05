@@ -13,7 +13,7 @@ data class Habit(
     val name: String,
     val description: String,
     val startDate: LocalDate,
-    val frequency: Frequency,
+    val frequency: Frequency?,
     val goal: Int,
     val completedDates: List<LocalDate>
 )

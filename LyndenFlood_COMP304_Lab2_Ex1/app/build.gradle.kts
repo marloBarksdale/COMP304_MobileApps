@@ -52,6 +52,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.material3.window.size.class1.v120)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.navigation.compose.v275)
+    implementation(libs.androidx.material3.window.size.class1.v112)
+
 
 
     implementation(libs.koin.android)

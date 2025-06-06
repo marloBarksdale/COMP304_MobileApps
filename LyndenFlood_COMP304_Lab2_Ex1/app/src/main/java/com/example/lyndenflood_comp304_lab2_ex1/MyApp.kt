@@ -14,9 +14,6 @@ class MyApp: Application() {
         startKoin {
             androidContext(this@MyApp)
             modules(appModule)
-        }        // startKoin {
-        //     androidContext(this@MyApp)
-        //     modules(appModule)
-        // }
+        }
     }
 }

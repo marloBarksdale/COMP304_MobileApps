@@ -1,0 +1,152 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.lyndenflood_comp304lab1_ex1"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="35" />
+10
+11    <permission
+11-->[androidx.core:core:1.16.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/fd5cd7268cc76c1ce5f0c75a3a034cd7/transformed/core-1.16.0/AndroidManifest.xml:22:5-24:47
+12        android:name="com.example.lyndenflood_comp304lab1_ex1.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+12-->[androidx.core:core:1.16.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/fd5cd7268cc76c1ce5f0c75a3a034cd7/transformed/core-1.16.0/AndroidManifest.xml:23:9-81
+13        android:protectionLevel="signature" />
+13-->[androidx.core:core:1.16.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/fd5cd7268cc76c1ce5f0c75a3a034cd7/transformed/core-1.16.0/AndroidManifest.xml:24:9-44
+14
+15    <uses-permission android:name="com.example.lyndenflood_comp304lab1_ex1.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+15-->[androidx.core:core:1.16.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/fd5cd7268cc76c1ce5f0c75a3a034cd7/transformed/core-1.16.0/AndroidManifest.xml:26:5-97
+15-->[androidx.core:core:1.16.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/fd5cd7268cc76c1ce5f0c75a3a034cd7/transformed/core-1.16.0/AndroidManifest.xml:26:22-94
+16
+17    <application
+17-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:5:5-29:19
+18        android:allowBackup="true"
+18-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:6:9-35
+19        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+19-->[androidx.core:core:1.16.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/fd5cd7268cc76c1ce5f0c75a3a034cd7/transformed/core-1.16.0/AndroidManifest.xml:28:18-86
+20        android:dataExtractionRules="@xml/data_extraction_rules"
+20-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:7:9-65
+21        android:debuggable="true"
+22        android:extractNativeLibs="false"
+23        android:fullBackupContent="@xml/backup_rules"
+23-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:8:9-54
+24        android:icon="@mipmap/ic_launcher"
+24-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:9:9-43
+25        android:label="@string/app_name"
+25-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:10:9-41
+26        android:roundIcon="@mipmap/ic_launcher_round"
+26-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:11:9-54
+27        android:supportsRtl="true"
+27-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:12:9-35
+28        android:testOnly="true"
+29        android:theme="@style/Theme.LyndenFlood_COMP304Lab1_Ex1" >
+29-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:13:9-65
+30        <activity android:name="com.example.lyndenflood_comp304lab1_ex1.AddTaskActivity" />
+30-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:15:9-53
+30-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:15:19-50
+31        <activity android:name="com.example.lyndenflood_comp304lab1_ex1.ViewEditTaskActivity" />
+31-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:16:9-58
+31-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:16:19-55
+32        <activity
+32-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:18:9-28:20
+33            android:name="com.example.lyndenflood_comp304lab1_ex1.MainActivity"
+33-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:19:13-41
+34            android:exported="true"
+34-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:20:13-36
+35            android:label="@string/app_name"
+35-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:21:13-45
+36            android:theme="@style/Theme.LyndenFlood_COMP304Lab1_Ex1" >
+36-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:22:13-69
+37            <intent-filter>
+37-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:23:13-27:29
+38                <action android:name="android.intent.action.MAIN" />
+38-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:24:17-69
+38-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:24:25-66
+39
+40                <category android:name="android.intent.category.LAUNCHER" />
+40-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:26:17-77
+40-->/home/marlo-barksdale/CentennialCoursework/COMP304_MobileApps/app/src/main/AndroidManifest.xml:26:27-74
+41            </intent-filter>
+42        </activity>
+43        <activity
+43-->[androidx.compose.ui:ui-tooling-android:1.7.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/e09d751c4f090445d9d5671f0459ddf0/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+44            android:name="androidx.compose.ui.tooling.PreviewActivity"
+44-->[androidx.compose.ui:ui-tooling-android:1.7.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/e09d751c4f090445d9d5671f0459ddf0/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+45            android:exported="true" />
+45-->[androidx.compose.ui:ui-tooling-android:1.7.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/e09d751c4f090445d9d5671f0459ddf0/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+46        <activity
+46-->[androidx.compose.ui:ui-test-manifest:1.7.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/dd38c9599129c0119694d648b8610af7/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:23:9-25:39
+47            android:name="androidx.activity.ComponentActivity"
+47-->[androidx.compose.ui:ui-test-manifest:1.7.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/dd38c9599129c0119694d648b8610af7/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:24:13-63
+48            android:exported="true" />
+48-->[androidx.compose.ui:ui-test-manifest:1.7.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/dd38c9599129c0119694d648b8610af7/transformed/ui-test-manifest-1.7.0/AndroidManifest.xml:25:13-36
+49
+50        <provider
+50-->[androidx.emoji2:emoji2:1.3.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/9df2ed3dd7746853e7dd80425575567b/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+51            android:name="androidx.startup.InitializationProvider"
+51-->[androidx.emoji2:emoji2:1.3.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/9df2ed3dd7746853e7dd80425575567b/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+52            android:authorities="com.example.lyndenflood_comp304lab1_ex1.androidx-startup"
+52-->[androidx.emoji2:emoji2:1.3.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/9df2ed3dd7746853e7dd80425575567b/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+53            android:exported="false" >
+53-->[androidx.emoji2:emoji2:1.3.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/9df2ed3dd7746853e7dd80425575567b/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+54            <meta-data
+54-->[androidx.emoji2:emoji2:1.3.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/9df2ed3dd7746853e7dd80425575567b/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+55                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+55-->[androidx.emoji2:emoji2:1.3.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/9df2ed3dd7746853e7dd80425575567b/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+56                android:value="androidx.startup" />
+56-->[androidx.emoji2:emoji2:1.3.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/9df2ed3dd7746853e7dd80425575567b/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+57            <meta-data
+57-->[androidx.lifecycle:lifecycle-process:2.9.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/a96ce8b113ce720baabffee38b782a24/transformed/lifecycle-process-2.9.0/AndroidManifest.xml:29:13-31:52
+58                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+58-->[androidx.lifecycle:lifecycle-process:2.9.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/a96ce8b113ce720baabffee38b782a24/transformed/lifecycle-process-2.9.0/AndroidManifest.xml:30:17-78
+59                android:value="androidx.startup" />
+59-->[androidx.lifecycle:lifecycle-process:2.9.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/a96ce8b113ce720baabffee38b782a24/transformed/lifecycle-process-2.9.0/AndroidManifest.xml:31:17-49
+60            <meta-data
+60-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+61                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+61-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+62                android:value="androidx.startup" />
+62-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+63        </provider>
+64
+65        <receiver
+65-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+66            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+66-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+67            android:directBootAware="false"
+67-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+68            android:enabled="true"
+68-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+69            android:exported="true"
+69-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+70            android:permission="android.permission.DUMP" >
+70-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+71            <intent-filter>
+71-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+72                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+72-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+72-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+73            </intent-filter>
+74            <intent-filter>
+74-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+75                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+75-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+75-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+76            </intent-filter>
+77            <intent-filter>
+77-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+78                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+78-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+78-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+79            </intent-filter>
+80            <intent-filter>
+80-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+81                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+81-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+81-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/marlo-barksdale/.gradle/caches/8.11.1/transforms/435f36b5d7292a9dff6b1e839d14f301/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
+82            </intent-filter>
+83        </receiver>
+84    </application>
+85
+86</manifest>

@@ -10,6 +10,6 @@ interface TipsApiService {
     @GET("exercises")
     suspend fun getHealthTips(
         @Header("X-Api-Key") apiKey: String,
-       @Query("type") type: String = "cardio"
+       @Query("type") type: String = "strength"
     ): List<HealthTip>
 }

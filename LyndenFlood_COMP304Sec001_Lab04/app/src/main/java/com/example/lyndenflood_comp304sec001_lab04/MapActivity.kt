@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
@@ -20,12 +21,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
-
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,18 +43,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.*
-import kotlin.math.*
 
 /**
  * MapActivity - Displays attractions on Google Maps with real-time location tracking
  * and geofencing capabilities for Barcelona travel guide
- *
- * Features:
- * - Real-time location tracking with continuous updates
- * - Geofencing around attractions with notifications
- * - Interactive map with custom markers and event handling
- * - Route planning between user location and attractions
- * - Proper map lifecycle management
  */
 class MapActivity : ComponentActivity() {
 
@@ -64,6 +55,7 @@ class MapActivity : ComponentActivity() {
     private lateinit var geofencingClient: GeofencingClient
     private lateinit var locationCallback: LocationCallback
     private var currentLocation: Location? = null
+    private var routePolyline: Polyline? = null
 
     // Map and UI state
     private var googleMap: GoogleMap? = null
@@ -162,7 +154,7 @@ class MapActivity : ComponentActivity() {
     }
 
     /**
-     * Check if user is near any Barcelona attractions and send notifications
+     * Enhanced proximity checking with multiple distance ranges and better notifications
      */
     private fun checkProximityToAttractions(userLocation: Location) {
         val attractions = getAllBarcelonaAttractions()
@@ -175,17 +167,44 @@ class MapActivity : ComponentActivity() {
 
             val distance = userLocation.distanceTo(attractionLocation)
 
-            // If within 200 meters of an attraction, send notification
-            if (distance <= 200f) {
-                sendProximityNotification(attraction, distance)
+            when {
+                distance <= 50f -> {
+                    sendEnhancedProximityNotification(
+                        attraction,
+                        "🎯 You're at ${attraction.name}!",
+                        "Welcome! Perfect time to explore this amazing place.",
+                        distance
+                    )
+                }
+                distance <= 150f -> {
+                    sendEnhancedProximityNotification(
+                        attraction,
+                        "🚶 Very close to ${attraction.name}!",
+                        "Just ${distance.toInt()}m away - keep walking!",
+                        distance
+                    )
+                }
+                distance <= 300f -> {
+                    sendEnhancedProximityNotification(
+                        attraction,
+                        "👀 Approaching ${attraction.name}",
+                        "${distance.toInt()}m away - you'll be there soon!",
+                        distance
+                    )
+                }
             }
         }
     }
 
     /**
-     * Send notification when user is near an attraction
+     * Send enhanced proximity notifications with better formatting
      */
-    private fun sendProximityNotification(attraction: Attraction, distance: Float) {
+    private fun sendEnhancedProximityNotification(
+        attraction: Attraction,
+        title: String,
+        message: String,
+        distance: Float
+    ) {
         val intent = Intent(this, MapActivity::class.java).apply {
             putExtra("attraction_name", attraction.name)
             putExtra("attraction_description", attraction.description)
@@ -195,21 +214,238 @@ class MapActivity : ComponentActivity() {
         }
 
         val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
+            this, attraction.id.hashCode(), intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_map)
-            .setContentTitle("📍 You're near ${attraction.name}!")
-            .setContentText("Only ${distance.toInt()}m away. Tap to learn more!")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+
             .build()
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
             NotificationManagerCompat.from(this).notify(attraction.id.hashCode(), notification)
+        }
+    }
+
+    /**
+     * Show route from user location to destination
+     */
+    private fun showRouteToLocation(destination: LatLng, destinationName: String) {
+        currentLocation?.let { userLocation ->
+            val origin = LatLng(userLocation.latitude, userLocation.longitude)
+
+            // Remove existing route
+            routePolyline?.remove()
+
+            // Create route polyline
+            val polylineOptions = PolylineOptions()
+                .add(origin)
+                .add(destination)
+                .color(Color.BLUE)
+                .width(10f)
+                .pattern(listOf(
+                    Dash(30f),
+                    Gap(15f)
+                ))
+
+            // Get the stored map reference and add route
+            googleMap?.let { map ->
+                routePolyline = map.addPolyline(polylineOptions)
+
+                // Calculate and show distance info
+                val distance = calculateDistanceKm(origin, destination)
+                showRouteInformation(destinationName, distance)
+
+                // Zoom to show both points
+                zoomToShowBothPoints(origin, destination, map)
+            }
+        } ?: run {
+            Log.w(TAG, "User location not available for route planning")
+        }
+    }
+
+    /**
+     * Calculate distance between two points in kilometers
+     */
+    private fun calculateDistanceKm(origin: LatLng, destination: LatLng): Float {
+        val results = FloatArray(1)
+        Location.distanceBetween(
+            origin.latitude, origin.longitude,
+            destination.latitude, destination.longitude,
+            results
+        )
+        return results[0] / 1000f // Convert to kilometers
+    }
+
+    /**
+     * Show route information notification
+     */
+    private fun showRouteInformation(destinationName: String, distanceKm: Float) {
+        val walkingTimeMinutes = (distanceKm * 12).toInt() // Rough estimate: 5 km/h walking speed
+        val distanceText = if (distanceKm < 1) {
+            "${(distanceKm * 1000).toInt()}m"
+        } else {
+            "${"%.1f".format(distanceKm)}km"
+        }
+
+        val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_dialog_map)
+            .setContentTitle("📍 Route to $destinationName")
+            .setContentText("Distance: $distanceText • ~$walkingTimeMinutes min walk")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+            .build()
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            NotificationManagerCompat.from(this).notify(7777, notification)
+        }
+    }
+
+    /**
+     * Zoom map to show both origin and destination
+     */
+    private fun zoomToShowBothPoints(origin: LatLng, destination: LatLng, map: GoogleMap) {
+        val boundsBuilder = LatLngBounds.Builder()
+        boundsBuilder.include(origin)
+        boundsBuilder.include(destination)
+
+        val bounds = boundsBuilder.build()
+        val padding = 200 // pixels of padding around the bounds
+
+        try {
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding))
+        } catch (e: Exception) {
+            Log.e(TAG, "Error zooming to route bounds", e)
+            // Fallback to just centering on destination
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(destination, 15f))
+        }
+    }
+
+    /**
+     * Setup Google Map with enhanced features and event handling
+     */
+    internal fun setupGoogleMap(
+        googleMap: GoogleMap,
+        latitude: Double,
+        longitude: Double,
+        markerTitle: String,
+        markerSnippet: String
+    ) {
+        try {
+            // Store map reference for route planning
+            this.googleMap = googleMap
+
+            // Enable location layer and controls
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                googleMap.isMyLocationEnabled = true
+                googleMap.uiSettings.isMyLocationButtonEnabled = true
+            }
+
+            // Configure map UI settings
+            googleMap.uiSettings.apply {
+                isZoomControlsEnabled = true
+                isCompassEnabled = true
+                isMapToolbarEnabled = true
+                isRotateGesturesEnabled = true
+                isScrollGesturesEnabled = true
+                isTiltGesturesEnabled = true
+            }
+
+            // Set map type
+            googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+
+            // Create main attraction marker
+            val attractionLocation = LatLng(latitude, longitude)
+            googleMap.addMarker(
+                MarkerOptions()
+                    .position(attractionLocation)
+                    .title(markerTitle)
+                    .snippet(markerSnippet)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            )
+
+            // Add markers for all Barcelona attractions
+            addAllAttractionMarkers(googleMap)
+
+            // Set up map event listeners
+            setupMapEventListeners(googleMap)
+
+            // Move camera to attraction with padding
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(attractionLocation, 15f))
+
+            Log.d(TAG, "Map setup completed successfully")
+
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Location permission not granted", e)
+        }
+    }
+
+    /**
+     * Add markers for all Barcelona attractions
+     */
+    private fun addAllAttractionMarkers(googleMap: GoogleMap) {
+        val allAttractions = getAllBarcelonaAttractions()
+
+        for (attraction in allAttractions) {
+            val markerColor = when {
+                attraction.id.contains("camp_nou") || attraction.id.contains("fc_") || attraction.id.contains("la_masia") ->
+                    BitmapDescriptorFactory.HUE_BLUE // FC Barcelona blue
+                attraction.id.contains("sagrada") || attraction.id.contains("park_guell") || attraction.id.contains("gothic") ->
+                    BitmapDescriptorFactory.HUE_RED // Historic red
+                attraction.id.contains("beach") || attraction.id.contains("barceloneta") || attraction.id.contains("bogatell") ->
+                    BitmapDescriptorFactory.HUE_CYAN // Beach cyan
+                else -> BitmapDescriptorFactory.HUE_ORANGE // Food/markets orange
+            }
+
+            googleMap.addMarker(
+                MarkerOptions()
+                    .position(LatLng(attraction.latitude, attraction.longitude))
+                    .title(attraction.name)
+                    .snippet(attraction.description)
+                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+            )
+        }
+    }
+
+    /**
+     * Setup enhanced map event listeners with route planning
+     */
+  fun setupMapEventListeners(googleMap: GoogleMap) {
+        // Handle marker clicks with route visualization
+        googleMap.setOnMarkerClickListener { marker ->
+            marker.showInfoWindow()
+
+            // Show route to clicked attraction
+            showRouteToLocation(marker.position, marker.title ?: "Location")
+
+            Log.d(TAG, "Route shown to: ${marker.title}")
+            false // Return false to allow default behavior
+        }
+
+        // Handle map clicks - clear route
+        googleMap.setOnMapClickListener { latLng ->
+            Log.d(TAG, "Map clicked at: ${latLng.latitude}, ${latLng.longitude}")
+            // Clear any existing route
+            routePolyline?.remove()
+            routePolyline = null
+        }
+
+        // Handle long press to show route to custom location
+        googleMap.setOnMapLongClickListener { latLng ->
+            showRouteToLocation(latLng, "Custom Location")
+            Log.d(TAG, "Route shown to custom location")
+        }
+
+        // Handle info window clicks
+        googleMap.setOnInfoWindowClickListener { marker ->
+            Log.d(TAG, "Info window clicked for: ${marker.title}")
+            showRouteToLocation(marker.position, marker.title ?: "Location")
         }
     }
 
@@ -341,7 +577,7 @@ fun EnhancedMapHeader(
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Back",
-                tint = Color(0xFF004D98)
+                tint = androidx.compose.ui.graphics.Color(0xFF004D98)
             )
         }
 
@@ -350,12 +586,12 @@ fun EnhancedMapHeader(
                 text = attractionName,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF004D98)
+                color = androidx.compose.ui.graphics.Color(0xFF004D98)
             )
             Text(
                 text = "📍 $attractionAddress",
                 fontSize = 12.sp,
-                color = Color(0xFF666666)
+                color = androidx.compose.ui.graphics.Color(0xFF666666)
             )
         }
 
@@ -366,7 +602,7 @@ fun EnhancedMapHeader(
             Icon(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = "Navigate",
-                tint = Color(0xFF004D98)
+                tint = androidx.compose.ui.graphics.Color(0xFF004D98)
             )
         }
     }
@@ -378,7 +614,7 @@ fun PermissionRequestCard(onRequestPermissions: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
+        colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color(0xFFF5F5F5))
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
@@ -395,12 +631,12 @@ fun PermissionRequestCard(onRequestPermissions: () -> Unit) {
             Text(
                 text = "To show maps, track your location, and send proximity alerts for Barcelona attractions.",
                 fontSize = 14.sp,
-                color = Color(0xFF666666)
+                color = androidx.compose.ui.graphics.Color(0xFF666666)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = onRequestPermissions,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF004D98))
+                colors = ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFF004D98))
             ) {
                 Text("Grant Permissions")
             }
@@ -418,7 +654,7 @@ fun EnhancedAttractionInfoCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = androidx.compose.ui.graphics.Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -426,7 +662,7 @@ fun EnhancedAttractionInfoCard(
                 text = attractionName,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF333333)
+                color = androidx.compose.ui.graphics.Color(0xFF333333)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -434,7 +670,7 @@ fun EnhancedAttractionInfoCard(
             Text(
                 text = attractionDescription,
                 fontSize = 14.sp,
-                color = Color(0xFF666666),
+                color = androidx.compose.ui.graphics.Color(0xFF666666),
                 lineHeight = 20.sp
             )
 
@@ -443,7 +679,7 @@ fun EnhancedAttractionInfoCard(
                 Text(
                     text = "📍 $attractionAddress",
                     fontSize = 12.sp,
-                    color = Color(0xFF999999)
+                    color = androidx.compose.ui.graphics.Color(0xFF999999)
                 )
             }
 
@@ -452,7 +688,7 @@ fun EnhancedAttractionInfoCard(
             Text(
                 text = "🔔 You'll get notified when you're nearby!",
                 fontSize = 12.sp,
-                color = Color(0xFF004D98),
+                color = androidx.compose.ui.graphics.Color(0xFF004D98),
                 fontWeight = FontWeight.Medium
             )
         }
@@ -470,7 +706,7 @@ fun EnhancedGoogleMapView(
     val context = LocalContext.current
     val mapView = remember {
         MapView(context).apply {
-            onCreate(null) // You can pass a savedInstanceState Bundle here if available
+            onCreate(null)
         }
     }
 
@@ -498,132 +734,14 @@ fun EnhancedGoogleMapView(
         factory = {
             mapView.apply {
                 getMapAsync { googleMap ->
-                    val location = LatLng(latitude, longitude)
-                    googleMap.addMarker(
-                        MarkerOptions()
-                            .position(location)
-                            .title(markerTitle)
-                            .snippet(markerSnippet)
+                    // Call the setupGoogleMap function from the activity
+                    (context as? MapActivity)?.setupGoogleMap(
+                        googleMap, latitude, longitude, markerTitle, markerSnippet
                     )
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
                 }
             }
         }
     )
-}
-
-
-/**
- * Setup Google Map with enhanced features and event handling
- */
-private fun setupGoogleMap(
-    googleMap: GoogleMap,
-    latitude: Double,
-    longitude: Double,
-    markerTitle: String,
-    markerSnippet: String,
-    context: Context
-) {
-    try {
-        // Enable location layer and controls
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            googleMap.isMyLocationEnabled = true
-            googleMap.uiSettings.isMyLocationButtonEnabled = true
-        }
-
-        // Configure map UI settings
-        googleMap.uiSettings.apply {
-            isZoomControlsEnabled = true
-            isCompassEnabled = true
-            isMapToolbarEnabled = true
-            isRotateGesturesEnabled = true
-            isScrollGesturesEnabled = true
-            isTiltGesturesEnabled = true
-        }
-
-        // Set map type
-        googleMap.mapType = GoogleMap.MAP_TYPE_NORMAL
-
-        // Create main attraction marker
-        val attractionLocation = LatLng(latitude, longitude)
-        googleMap.addMarker(
-            MarkerOptions()
-                .position(attractionLocation)
-                .title(markerTitle)
-                .snippet(markerSnippet)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-        )
-
-        // Add markers for all Barcelona attractions
-        addAllAttractionMarkers(googleMap)
-
-        // Set up map event listeners
-        setupMapEventListeners(googleMap)
-
-        // Move camera to attraction with padding
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(attractionLocation, 15f))
-
-        Log.d("MapActivity", "Map setup completed successfully")
-
-    } catch (e: SecurityException) {
-        Log.e("MapActivity", "Location permission not granted", e)
-    }
-}
-
-/**
- * Add markers for all Barcelona attractions
- */
-private fun addAllAttractionMarkers(googleMap: GoogleMap) {
-    val allAttractions = getAllBarcelonaAttractions()
-
-    for (attraction in allAttractions) {
-        val markerColor = when {
-            attraction.id.contains("camp_nou") || attraction.id.contains("fc_") || attraction.id.contains("la_masia") ->
-                BitmapDescriptorFactory.HUE_BLUE // FC Barcelona blue
-            attraction.id.contains("sagrada") || attraction.id.contains("park_guell") || attraction.id.contains("gothic") ->
-                BitmapDescriptorFactory.HUE_RED // Historic red
-            attraction.id.contains("beach") || attraction.id.contains("barceloneta") || attraction.id.contains("bogatell") ->
-                BitmapDescriptorFactory.HUE_CYAN // Beach cyan
-            else -> BitmapDescriptorFactory.HUE_ORANGE // Food/markets orange
-        }
-
-        googleMap.addMarker(
-            MarkerOptions()
-                .position(LatLng(attraction.latitude, attraction.longitude))
-                .title(attraction.name)
-                .snippet(attraction.description)
-                .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-        )
-    }
-}
-
-/**
- * Setup map event listeners for user interactions
- */
-private fun setupMapEventListeners(googleMap: GoogleMap) {
-    // Handle marker clicks
-    googleMap.setOnMarkerClickListener { marker ->
-        marker.showInfoWindow()
-        Log.d("MapActivity", "Marker clicked: ${marker.title}")
-        false // Return false to allow default behavior
-    }
-
-    // Handle map clicks
-    googleMap.setOnMapClickListener { latLng ->
-        Log.d("MapActivity", "Map clicked at: ${latLng.latitude}, ${latLng.longitude}")
-    }
-
-    // Handle long press events
-    googleMap.setOnMapLongClickListener { latLng ->
-        Log.d("MapActivity", "Map long pressed at: ${latLng.latitude}, ${latLng.longitude}")
-        // Could add custom marker here for user-defined points of interest
-    }
-
-    // Handle info window clicks
-    googleMap.setOnInfoWindowClickListener { marker ->
-        Log.d("MapActivity", "Info window clicked for: ${marker.title}")
-        // Could navigate to detailed attraction view
-    }
 }
 
 /**

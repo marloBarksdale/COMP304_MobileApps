@@ -28,11 +28,6 @@ android {
         } else {
             ""
         }
-
-        // Debug: Print to check if API key is loaded
-        println("🔍 Debug: API Key loaded: ${if (apiKey.isNotEmpty()) "✅ Yes (${apiKey.take(8)}...)" else "❌ No"}")
-        println("🔍 Debug: secrets.properties exists: ${secretsPropertiesFile.exists()}")
-
         manifestPlaceholders["MAPS_API_KEY"] = apiKey
     }
 
@@ -68,14 +63,18 @@ dependencies {
     implementation(libs.androidx.material3)
 
     // Google Maps & Location Services
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
 
     // Navigation for multiple activities
     implementation(libs.androidx.navigation.compose)
 
     // For loading images
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.coil.compose)
+
+    // For notifications and advanced features
+    implementation(libs.androidx.work.runtime.ktx.v281)
+    implementation(libs.androidx.core.ktx)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -35,6 +35,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.lyndenflood_comp304sec001_lab04.ui.theme.LyndenFlood_COMP304Sec001_Lab04Theme
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -465,35 +468,50 @@ fun EnhancedGoogleMapView(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    var mapView: MapView? by remember { mutableStateOf(null) }
-
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            MapView(context).also { mv ->
-                mapView = mv
-                mv.onCreate(Bundle())
-                mv.getMapAsync { googleMap ->
-                    setupGoogleMap(googleMap, latitude, longitude, markerTitle, markerSnippet, context)
-                }
-            }
-        },
-        update = { mapView ->
-            mapView.onResume()
-        }
-    )
-
-    // Proper lifecycle management
-    DisposableEffect(mapView) {
-        onDispose {
-            mapView?.let { mv ->
-                mv.onPause()
-                mv.onStop()
-                mv.onDestroy()
-            }
+    val mapView = remember {
+        MapView(context).apply {
+            onCreate(null) // You can pass a savedInstanceState Bundle here if available
         }
     }
+
+    // Bind lifecycle
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val lifecycle = lifecycleOwner.lifecycle
+        val observer = object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) = mapView.onStart()
+            override fun onResume(owner: LifecycleOwner) = mapView.onResume()
+            override fun onPause(owner: LifecycleOwner) = mapView.onPause()
+            override fun onStop(owner: LifecycleOwner) = mapView.onStop()
+            override fun onDestroy(owner: LifecycleOwner) = mapView.onDestroy()
+        }
+
+        lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycle.removeObserver(observer)
+        }
+    }
+
+    AndroidView(
+        modifier = modifier.fillMaxSize(),
+        factory = {
+            mapView.apply {
+                getMapAsync { googleMap ->
+                    val location = LatLng(latitude, longitude)
+                    googleMap.addMarker(
+                        MarkerOptions()
+                            .position(location)
+                            .title(markerTitle)
+                            .snippet(markerSnippet)
+                    )
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
+                }
+            }
+        }
+    )
 }
+
 
 /**
  * Setup Google Map with enhanced features and event handling

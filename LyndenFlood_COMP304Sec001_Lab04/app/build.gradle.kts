@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -16,6 +18,17 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Read API key from secrets.properties
+        val secretsPropertiesFile = rootProject.file("secrets.properties")
+        val apiKey = if (secretsPropertiesFile.exists()) {
+            val secretsProperties = Properties()
+            secretsProperties.load(secretsPropertiesFile.inputStream())
+            secretsProperties.getProperty("MAPS_API_KEY") ?: ""
+        } else {
+            ""
+        }
+        manifestPlaceholders["MAPS_API_KEY"] = apiKey
     }
 
     buildTypes {
@@ -40,7 +53,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -49,6 +61,17 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    // Google Maps & Location Services
+    implementation(libs.play.services.maps.v1820)
+    implementation(libs.play.services.location.v2101)
+
+    // Navigation for multiple activities
+    implementation(libs.androidx.navigation.compose.v276)
+
+    // For loading images
+    implementation(libs.coil.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
